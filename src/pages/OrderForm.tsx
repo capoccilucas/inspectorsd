@@ -62,9 +62,13 @@ export default function OrderForm() {
     if (!validate()) return;
 
     const now = new Date().toISOString();
-    const order: Order = isNew
-      ? { ...form, id: generateId(), createdAt: now, updatedAt: now }
-      : { ...form, id: id!, createdAt: now, updatedAt: now };
+    const existing = !isNew && id ? getOrderById(id) : undefined;
+    const order: Order = {
+      ...form,
+      id: isNew ? generateId() : id!,
+      createdAt: existing?.createdAt ?? now,
+      updatedAt: now,
+    };
 
     upsertOrder(order);
     navigate(`/orders/${order.id}`);
